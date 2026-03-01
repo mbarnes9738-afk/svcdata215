@@ -64,7 +64,6 @@ def load_csv_to_sqlite(csv_path, table_name='history_data', db_path='history.db'
 
 
 def read_sqlite_table(table_name='history_data', db_path='history.db'):
-    """Read a full table from SQLite and return it as a DataFrame."""
     conn = get_sqlite_connection(db_path)
     df = pd.read_sql(f'SELECT * FROM {table_name}', conn)
     conn.close()
@@ -74,7 +73,6 @@ def read_sqlite_table(table_name='history_data', db_path='history.db'):
 def read_s3_csv(key, bucket=None):
     """
     Download a CSV from S3 and return it as a df
-    Uses the aws_bucket environment variable by default.
     """
     if bucket is None:
         bucket = aws_bucket
@@ -94,10 +92,6 @@ def read_mssql_table(table_name):
 def build_gaming_df(history_df, players_df, achievements_df, games_df):
     """
     Merge the four source df's into a single gaming df
-    Join order mirrors the original notebook:
-      history ← players (playerid)
-               ← achievements (achievementid)
-               ← games (gameid)
     """
     df = history_df.merge(players_df, on='playerid', how='left')
     df = df.merge(achievements_df, on='achievementid', how='left')
@@ -110,7 +104,6 @@ def build_gaming_df(history_df, players_df, achievements_df, games_df):
 def print_df_info(*named_dfs):
     """
     Print column names for each df passed in.
-    Usage: print_df_info(('history', history_df), ('players', players_df))
     """
     for name, df in named_dfs:
         print(f"{name} columns: {df.columns.tolist()}")
